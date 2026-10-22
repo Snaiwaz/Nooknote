@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101419" />
+  <title>浮笺 · 桌面侧边速记</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; overflow: hidden; color: #edf2f4; background: #101419; }
+    button, textarea { font: inherit; }
+    button { color: inherit; cursor: pointer; }
+    .desktop { position: relative; min-height: 100vh; isolation: isolate; background:
+      radial-gradient(ellipse at 76% 31%, rgba(37,90,85,.32), transparent 31%),
+      radial-gradient(ellipse at 19% 86%, rgba(50,60,79,.3), transparent 36%),
+      linear-gradient(135deg,#172127 0%,#10171c 45%,#111719 100%); }
+    .desktop::before { content:""; position:absolute; inset:0; opacity:.2; z-index:-1; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.14'/%3E%3C/svg%3E"); }
+    .desktop-content { padding:54px clamp(28px,8vw,120px); max-width:1180px; margin:auto; }
+    .topline { display:flex; align-items:center; justify-content:space-between; color:#92a09f; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+    .brand { display:flex; gap:10px; align-items:center; color:#dfe8e5; letter-spacing:.04em; }
+    .brand-mark { width:25px; height:25px; border-radius:8px 8px 8px 3px; background:#c6e4b5; display:grid; place-items:center; color:#23342c; font-size:14px; font-weight:800; }
+    .intro { margin-top:clamp(100px,18vh,180px); max-width:600px; }
+    .eyebrow { font-size:12px; color:#a9c79d; letter-spacing:.14em; }
+    h1 { margin:17px 0 14px; font-size:clamp(36px,5vw,62px); letter-spacing:-.055em; line-height:1.1; font-weight:570; }
+    .intro p { max-width:470px; color:#a1acab; font-size:15px; line-height:1.85; }
+    .hint { display:inline-flex; gap:11px; align-items:center; margin-top:35px; padding:10px 13px; border:1px solid rgba(217,232,224,.12); border-radius:9px; color:#96a39f; font-size:12px; background:rgba(255,255,255,.025); }
+    .hint-dot { width:7px; height:7px; border-radius:50%; background:#c6e4b5; box-shadow:0 0 12px #c6e4b580; }
+    .quiet-card { position:absolute; right:clamp(70px,14vw,220px); bottom:14%; width:196px; padding:17px; border:1px solid rgba(255,255,255,.07); border-radius:13px; background:rgba(255,255,255,.035); transform:rotate(2deg); color:#899693; }
+    .quiet-card span { display:block; color:#c3cec8; font-size:12px; margin-bottom:10px; }
+    .quiet-card i { display:block; width:100%; height:4px; margin-top:8px; border-radius:4px; background:rgba(255,255,255,.07); }
+    .quiet-card i:last-child { width:62%; }
+
+    /* Edge handle: a faint seam at rest, a soft droplet while being moved. */
+    .edge-handle { position:fixed; z-index:24; width:8px; height:76px; padding:0; border:0; outline:0; background:transparent; opacity:.43; touch-action:none; transition:opacity .22s ease, width .24s cubic-bezier(.2,.75,.25,1), height .24s cubic-bezier(.2,.75,.25,1), background .24s ease, border-radius .24s ease, box-shadow .24s ease, transform .24s ease; }
+    .edge-handle::before { content:""; position:absolute; left:2px; top:24px; width:3px; height:28px; border-radius:4px; background:#c6e4b5; box-shadow:0 0 12px #c6e4b540; transition:all .22s ease; }
+    .edge-handle:hover, .edge-handle.near, .edge-handle:focus-visible { opacity:.95; }
+    .edge-handle.edge-right { right:0; top:50%; transform:translateY(-50%); }
+    .edge-handle.edge-left { left:0; top:50%; transform:translateY(-50%); }
+    .edge-handle.edge-top { top:0; left:50%; width:76px; height:8px; transform:translateX(-50%); }
+    .edge-handle.edge-top::before, .edge-handle.edge-bottom::before { left:24px; top:2px; width:28px; height:3px; }
+    .edge-handle.edge-bottom { bottom:0; left:50%; width:76px; height:8px; transform:translateX(-50%); }
+    .edge-handle.edge-left::before { left:3px; }
+    .edge-handle.edge-right::before { right:3px; left:auto; }
+    .edge-handle.dragging { width:24px; height:28px; opacity:1; border-radius:58% 58% 58% 10%; background:linear-gradient(145deg,#def2ce,#a9ce96); box-shadow:0 7px 24px #9ec98b66, inset -2px -3px 7px #66885a45; transform:translate(-50%,-50%) rotate(var(--drag-rotation,-45deg)) scale(var(--blob-scale-x,1),var(--blob-scale-y,1)); transition:opacity .16s ease, width .18s cubic-bezier(.2,.75,.25,1), height .18s cubic-bezier(.2,.75,.25,1), background .18s ease, border-radius .18s ease, box-shadow .18s ease, transform .13s cubic-bezier(.2,1.35,.35,1); will-change:transform; }
+    .edge-handle.dragging::before { opacity:0; transform:scale(.2); }
+    .edge-handle.edge-left.dragging, .edge-handle.edge-right.dragging, .edge-handle.edge-top.dragging, .edge-handle.edge-bottom.dragging { right:auto; bottom:auto; }
+    .edge-handle.dragging.edge-right::after, .edge-handle.dragging.edge-left::after, .edge-handle.dragging.edge-top::after, .edge-handle.dragging.edge-bottom::after { content:""; position:absolute; width:6px; height:6px; top:3px; left:3px; border-radius:50%; background:#f5ffe9; opacity:.85; }
+    .snap-guide { position:fixed; z-index:19; pointer-events:none; opacity:0; transition:opacity .2s ease; }
+    .snap-guide.active { opacity:1; }
+    .snap-guide.left,.snap-guide.right { top:12%; bottom:12%; width:3px; background:linear-gradient(transparent,#c6e4b580 18%,#c6e4b580 82%,transparent); }
+    .snap-guide.left { left:0; } .snap-guide.right { right:0; }
+    .snap-guide.top,.snap-guide.bottom { left:12%; right:12%; height:3px; background:linear-gradient(90deg,transparent,#c6e4b580 18%,#c6e4b580 82%,transparent); }
+    .snap-guide.top { top:0; } .snap-guide.bottom { bottom:0; }
+
+    .panel { position:fixed; z-index:22; width:350px; max-height:min(560px,100vh); display:flex; flex-direction:column; overflow:hidden; border:1px solid rgba(228,239,231,.12); background:rgba(24,31,33,.97); box-shadow:0 24px 80px #0008,0 2px 12px #0004; backdrop-filter:blur(24px); opacity:0; pointer-events:none; transition:opacity .18s ease, transform .22s cubic-bezier(.2,.75,.25,1); }
+    .panel.open { opacity:1; pointer-events:auto; }
+    .panel.edge-right { right:0; border-radius:16px 0 0 16px; transform:translateX(12px); }
+    .panel.edge-right.open { transform:translateX(0); }
+    .panel.edge-left { left:0; border-radius:0 16px 16px 0; transform:translateX(-12px); }
+    .panel.edge-left.open { transform:translateX(0); }
+    .panel.edge-top { top:0; border-radius:0 0 16px 16px; transform:translateY(-12px); }
+    .panel.edge-top.open { transform:translateY(0); }
+    .panel.edge-bottom { bottom:0; border-radius:16px 16px 0 0; transform:translateY(12px); }
+    .panel.edge-bottom.open { transform:translateY(0); }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; padding:18px 19px 14px; }
+    .panel-title { display:flex; align-items:center; gap:10px; font-weight:600; font-size:15px; }
+    .spark { color:#c6e4b5; font-size:17px; }
+    .head-actions { display:flex; gap:6px; }
+    .icon-btn { width:30px; height:30px; display:grid; place-items:center; border:1px solid transparent; border-radius:8px; background:transparent; color:#84928e; font-size:16px; }
+    .icon-btn:hover { background:#ffffff0c; color:#eaf0ed; border-color:#ffffff12; }
+    .draft-wrap { padding:0 18px; }
+    textarea { display:block; width:100%; min-height:132px; resize:vertical; padding:14px; border:1px solid #ffffff10; border-radius:11px; outline:none; color:#e2e9e4; background:#111819; font-size:13px; line-height:1.75; }
+    textarea::placeholder { color:#677470; }
+    textarea:focus { border-color:#a1c28d85; box-shadow:0 0 0 3px #a1c28d10; }
+    .draft-meta { display:flex; justify-content:space-between; align-items:center; margin:8px 2px 14px; color:#73807b; font-size:10px; }
+    .save-hint { color:#94b784; }
+    .list-head { display:flex; align-items:center; justify-content:space-between; padding:13px 20px 8px; border-top:1px solid #ffffff0a; color:#7e8a86; font-size:10px; letter-spacing:.06em; }
+    .notes { overflow-y:auto; padding:0 12px 13px; }
+    .note { padding:10px 9px; border-radius:9px; }
+    .note:hover,.note.expanded { background:#ffffff08; }
+    .note-summary { width:100%; display:flex; gap:11px; align-items:flex-start; padding:0; border:0; text-align:left; background:transparent; }
+    .note-mark { width:6px; height:6px; flex:0 0 auto; margin-top:6px; border-radius:50%; background:#c6e4b5; }
+    .note-text { min-width:0; flex:1; color:#c4cec8; font-size:11px; line-height:1.55; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+    .note-time { flex:0 0 auto; color:#687570; font-size:9px; }
+    .note-detail { display:none; padding:10px 0 1px 17px; }
+    .note.expanded .note-detail { display:block; }
+    .note-full { margin:0; color:#e0e8e2; font-size:11px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .note-actions { display:flex; justify-content:flex-end; margin-top:9px; }
+    .delete-note { padding:5px 9px; border:1px solid #ffffff12; border-radius:7px; color:#aeb8b3; background:transparent; font-size:10px; }
+    .delete-note:hover { color:#ffc5b4; border-color:#ffc5b444; background:#ffc5b40a; }
+    .empty { padding:12px 9px; color:#71807a; font-size:11px; }
+    .toast { position:fixed; z-index:30; left:50%; bottom:26px; transform:translate(-50%,12px); opacity:0; pointer-events:none; padding:9px 13px; border:1px solid #ffffff14; border-radius:9px; background:#202b2b; color:#d7e3dc; font-size:11px; transition:.2s; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    @media (max-width:520px) { .panel { width:min(350px,100vw); } .quiet-card { display:none; } .desktop-content { padding-top:34px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="desktop" id="desktop">
+    <div class="desktop-content">
+      <div class="topline"><div class="brand"><div class="brand-mark">浮</div><span>浮笺 / FLOATNOTE</span></div><span id="clock">桌面速记原型</span></div>
+      <section class="intro">
+        <div class="eyebrow">把灵感留在手边</div>
+        <h1>轻轻一碰，<br>记下此刻。</h1>
+        <p>浮笺安静地待在屏幕边缘。悬停即可唤出，写完按 Enter 收进收件箱；离开后面板收起，未完成的草稿仍会留在原处。</p>
+        <div class="hint"><span class="hint-dot"></span><span>将鼠标移到右侧边缘，或按住边缘细线拖动位置</span><span>↗</span></div>
+      </section>
+      <div class="quiet-card" aria-hidden="true"><span>今天的灵感</span><i></i><i></i><i></i></div>
+    </div>
+    <div class="snap-guide left" data-guide="left"></div><div class="snap-guide right" data-guide="right"></div>
+    <div class="snap-guide top" data-guide="top"></div><div class="snap-guide bottom" data-guide="bottom"></div>
+    <button class="edge-handle edge-right" id="handle" aria-label="拖动浮笺到其他屏幕边缘" title="按住拖动"></button>
+    <section class="panel edge-right" id="panel" aria-label="浮笺快速收件箱">
+      <header class="panel-head">
+        <div class="panel-title"><span class="spark">✳</span><span>快速收件箱</span></div>
+        <div class="head-actions"><button class="icon-btn" id="closeBtn" title="收起面板" aria-label="收起面板">×</button></div>
+      </header>
+      <div class="draft-wrap">
+        <textarea id="draft" placeholder="此刻想到什么？\n写下来，灵感不会打断你的节奏。"></textarea>
+        <div class="draft-meta"><span>草稿会保留，按 Enter 收录</span><span class="save-hint" id="saveHint">草稿已保留</span></div>
+      </div>
+      <div class="list-head"><span>最近记录</span><span id="noteCount">0 条</span></div>
+      <div class="notes" id="notes"></div>
+    </section>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const handle = $('handle'), panel = $('panel'), draft = $('draft');
+      const NOTE_KEY = 'floatnote-items-v2', DRAFT_KEY = 'floatnote-draft-v2', POSITION_KEY = 'floatnote-position-v2';
+      let notes = [], position = { edge:'right', ratio:.5 }, hoverTimer, toastTimer, dragging = false, dragPointer = null, lastDrag = null;
+      try { const stored = JSON.parse(localStorage.getItem(NOTE_KEY) || '[]'); if (Array.isArray(stored)) notes = stored; } catch { notes = []; }
+      try { const stored = JSON.parse(localStorage.getItem(POSITION_KEY) || 'null'); if (stored && ['left','right','top','bottom'].includes(stored.edge)) position = { edge:stored.edge, ratio:clamp(Number(stored.ratio) || .5, .12, .88) }; } catch { /* use the default position */ }
+      draft.value = localStorage.getItem(DRAFT_KEY) || '';
+      renderNotes(); applyPosition();
+
+      function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+      function savePosition() { localStorage.setItem(POSITION_KEY, JSON.stringify(position)); }
+      function applyPosition() {
+        handle.className = `edge-handle edge-${position.edge}`;
+        panel.className = `panel edge-${position.edge}`;
+        const w = window.innerWidth, h = window.innerHeight;
+        if (position.edge === 'left' || position.edge === 'right') {
+          const y = clamp(position.ratio * h, 52, h - 52);
+          handle.style.left = position.edge === 'left' ? '0px' : 'auto'; handle.style.right = position.edge === 'right' ? '0px' : 'auto';
+          handle.style.top = `${y}px`; handle.style.bottom = 'auto';
+          panel.style.top = `${clamp(y - Math.min(panel.offsetHeight || 480, h) / 2, 0, Math.max(0,h - (panel.offsetHeight || 480)))}px`;
+          panel.style.bottom = 'auto'; panel.style.left = position.edge === 'left' ? '0px' : 'auto'; panel.style.right = position.edge === 'right' ? '0px' : 'auto';
+        } else {
+          const x = clamp(position.ratio * w, 52, w - 52);
+          handle.style.top = position.edge === 'top' ? '0px' : 'auto'; handle.style.bottom = position.edge === 'bottom' ? '0px' : 'auto';
+          handle.style.left = `${x}px`; handle.style.right = 'auto';
+          panel.style.left = `${clamp(x - 175, 0, Math.max(0,w - 350))}px`;
+          panel.style.right = 'auto'; panel.style.top = position.edge === 'top' ? '0px' : 'auto'; panel.style.bottom = position.edge === 'bottom' ? '0px' : 'auto';
+        }
+      }
+      function openPanel() {
+        if (dragging) return;
+        clearTimeout(hoverTimer); panel.classList.add('open'); handle.classList.add('near');
+        applyPosition();
+        requestAnimationFrame(() => { if (!dragging && panel.classList.contains('open')) { draft.focus({ preventScroll:true }); draft.setSelectionRange(draft.value.length, draft.value.length); } });
+      }
+      function closePanel() { clearTimeout(hoverTimer); panel.classList.remove('open'); handle.classList.remove('near'); }
+      function scheduleOpen() { if (dragging || panel.classList.contains('open')) return; clearTimeout(hoverTimer); hoverTimer = setTimeout(openPanel, 150); }
+      function onZoneLeave() {
+        requestAnimationFrame(() => {
+          if (dragging) return;
+          if (!handle.matches(':hover') && !panel.matches(':hover')) closePanel();
+        });
+      }
+      handle.addEventListener('mouseenter', scheduleOpen);
+      handle.addEventListener('mouseleave', onZoneLeave);
+      handle.addEventListener('focus', scheduleOpen);
+      panel.addEventListener('mouseenter', () => clearTimeout(hoverTimer));
+      panel.addEventListener('mouseleave', onZoneLeave);
+      $('closeBtn').addEventListener('click', closePanel);
+      window.addEventListener('resize', () => { if (!dragging) applyPosition(); });
+
+      handle.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        event.preventDefault(); clearTimeout(hoverTimer); closePanel(); dragging = true; dragPointer = event.pointerId;
+        lastDrag = { x:event.clientX, y:event.clientY, time:performance.now(), angle:null };
+        handle.style.setProperty('--drag-rotation','-45deg'); handle.style.setProperty('--blob-scale-x','1'); handle.style.setProperty('--blob-scale-y','1');
+        handle.setPointerCapture(event.pointerId); handle.classList.add('dragging');
+        handle.style.left = `${event.clientX}px`; handle.style.top = `${event.clientY}px`; handle.style.right = 'auto'; handle.style.bottom = 'auto';
+        updateSnapGuide(event.clientX, event.clientY);
+      });
+      handle.addEventListener('pointermove', (event) => {
+        if (!dragging || event.pointerId !== dragPointer) return;
+        handle.style.left = `${event.clientX}px`; handle.style.top = `${event.clientY}px`;
+        const now = performance.now(), dx = event.clientX - lastDrag.x, dy = event.clientY - lastDrag.y;
+        const distance = Math.hypot(dx, dy), angle = distance > 1.25 ? Math.atan2(dy, dx) * 180 / Math.PI : lastDrag.angle;
+        if (angle !== null) {
+          const turn = lastDrag.angle === null ? 0 : ((angle - lastDrag.angle + 540) % 360) - 180;
+          const speed = clamp((distance / Math.max(1, now - lastDrag.time)) / 1.1, 0, 1);
+          // The pointed end trails the cursor's direction; turns add a small springy wobble.
+          const rotation = angle + 45 + clamp(turn * .2, -11, 11);
+          handle.style.setProperty('--drag-rotation', `${rotation}deg`);
+          handle.style.setProperty('--blob-scale-x', `${1 - speed * .08}`);
+          handle.style.setProperty('--blob-scale-y', `${1 + speed * .2}`);
+        }
+        lastDrag = { x:event.clientX, y:event.clientY, time:now, angle:angle === null ? lastDrag.angle : angle };
+        updateSnapGuide(event.clientX, event.clientY);
+      });
+      handle.addEventListener('pointerup', (event) => {
+        if (!dragging || event.pointerId !== dragPointer) return;
+        const w = window.innerWidth, h = window.innerHeight;
+        const distances = [{edge:'left',d:event.clientX},{edge:'right',d:w-event.clientX},{edge:'top',d:event.clientY},{edge:'bottom',d:h-event.clientY}].sort((a,b) => a.d-b.d);
+        const edge = distances[0].edge;
+        position = { edge, ratio: edge === 'left' || edge === 'right' ? clamp(event.clientY / h,.12,.88) : clamp(event.clientX / w,.12,.88) };
+        dragging = false; dragPointer = null; lastDrag = null; handle.classList.remove('dragging');
+        handle.style.removeProperty('--drag-rotation'); handle.style.removeProperty('--blob-scale-x'); handle.style.removeProperty('--blob-scale-y');
+        clearSnapGuides(); savePosition(); applyPosition(); showToast('位置已记住');
+      });
+      handle.addEventListener('lostpointercapture', () => {
+        if (dragging) { dragging = false; dragPointer = null; lastDrag = null; handle.classList.remove('dragging'); handle.style.removeProperty('--drag-rotation'); handle.style.removeProperty('--blob-scale-x'); handle.style.removeProperty('--blob-scale-y'); clearSnapGuides(); applyPosition(); }
+      });
+      function updateSnapGuide(x,y) {
+        const d = [{edge:'left',d:x},{edge:'right',d:innerWidth-x},{edge:'top',d:y},{edge:'bottom',d:innerHeight-y}].sort((a,b)=>a.d-b.d)[0].edge;
+        document.querySelectorAll('.snap-guide').forEach(el => el.classList.toggle('active', el.dataset.guide === d));
+      }
+      function clearSnapGuides() { document.querySelectorAll('.snap-guide').forEach(el => el.classList.remove('active')); }
+
+      draft.addEventListener('input', () => { localStorage.setItem(DRAFT_KEY, draft.value); $('saveHint').textContent = '草稿已保留'; });
+      draft.addEventListener('keydown', (event) => {
+        // Enter used to accept Chinese IME candidates must not submit the note.
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) { event.preventDefault(); saveNote(); }
+      });
+      function saveNote() {
+        const text = draft.value.trim(); if (!text) return;
+        notes.unshift({ id: `${Date.now()}-${Math.random().toString(36).slice(2,7)}`, text, time: Date.now() });
+        localStorage.setItem(NOTE_KEY, JSON.stringify(notes)); draft.value = ''; localStorage.removeItem(DRAFT_KEY); $('saveHint').textContent = '已收录'; renderNotes(); draft.focus(); draft.setSelectionRange(0,0); showToast('已收进快速收件箱');
+      }
+      function renderNotes() {
+        $('noteCount').textContent = `${notes.length} 条`;
+        if (!notes.length) { $('notes').innerHTML = '<div class="empty">还没有记录，写下第一条灵感吧。</div>'; return; }
+        $('notes').innerHTML = notes.map(note => `<article class="note" data-id="${escapeHtml(note.id)}"><button class="note-summary" type="button" aria-expanded="false"><span class="note-mark"></span><span class="note-text">${escapeHtml(note.text)}</span><time class="note-time">${escapeHtml(formatTime(note.time))}</time></button><div class="note-detail"><p class="note-full">${escapeHtml(note.text)}</p><div class="note-actions"><button class="delete-note" type="button">删除记录</button></div></div></article>`).join('');
+        $('notes').querySelectorAll('.note-summary').forEach(button => button.addEventListener('click', () => { const card = button.closest('.note'); const expanded = card.classList.toggle('expanded'); button.setAttribute('aria-expanded', String(expanded)); }));
+        $('notes').querySelectorAll('.delete-note').forEach(button => button.addEventListener('click', () => { const card = button.closest('.note'); notes = notes.filter(note => String(note.id) !== card.dataset.id); localStorage.setItem(NOTE_KEY, JSON.stringify(notes)); renderNotes(); showToast('记录已删除'); }));
+      }
+      function escapeHtml(value) { return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+      function formatTime(value) { return new Date(value).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}); }
+      function showToast(message) { $('toast').textContent = message; $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('show'), 1450); }
+      $('clock').textContent = new Date().toLocaleDateString('zh-CN', { weekday:'long', month:'long', day:'numeric' });
+    })();
+  </script>
+</body>
+</html>
