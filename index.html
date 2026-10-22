@@ -139,8 +139,12 @@
       function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
       function savePosition() { localStorage.setItem(POSITION_KEY, JSON.stringify(position)); }
       function applyPosition() {
-        handle.className = `edge-handle edge-${position.edge}`;
-        panel.className = `panel edge-${position.edge}`;
+        for (const edge of ['left','right','top','bottom']) {
+          handle.classList.remove(`edge-${edge}`);
+          panel.classList.remove(`edge-${edge}`);
+        }
+        handle.classList.add(`edge-${position.edge}`);
+        panel.classList.add(`edge-${position.edge}`);
         const w = window.innerWidth, h = window.innerHeight;
         if (position.edge === 'left' || position.edge === 'right') {
           const y = clamp(position.ratio * h, 52, h - 52);
