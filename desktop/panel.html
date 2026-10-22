@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="panel.css" />
+  <title>隅笺 · 快速收件箱</title>
+</head>
+<body>
+  <main class="panel-shell">
+    <header class="panel-head">
+      <div class="title"><span class="spark">✳</span><span>快速收件箱</span></div>
+      <button class="icon-btn" id="closeBtn" title="收起面板" aria-label="收起面板">×</button>
+    </header>
+    <section class="draft-wrap">
+      <textarea id="draft" placeholder="此刻想到什么？&#10;写下来，灵感不会打断你的节奏。"></textarea>
+      <div class="draft-meta"><span>草稿会保留，按 Enter 收录</span><span class="save-hint" id="saveHint">草稿已保留</span></div>
+    </section>
+    <div class="list-head"><span>最近记录</span><span id="noteCount">0 条</span></div>
+    <section class="notes" id="notes" aria-label="最近记录"></section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="panel.js"></script>
+</body>
+</html>
