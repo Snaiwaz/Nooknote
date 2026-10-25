@@ -92,12 +92,15 @@ document.getElementById('closeBtn').addEventListener('click', () => window.nookn
 document.addEventListener('keydown', (event) => { if (event.key === 'Escape') window.nooknote.escape(); });
 document.addEventListener('mouseenter', () => window.nooknote.panelEntered());
 document.addEventListener('mouseleave', () => window.nooknote.panelLeft());
-window.nooknote.onPanelOpened(() => {
+function focusDraft() {
   requestAnimationFrame(() => {
     draft.focus({ preventScroll:true });
     draft.setSelectionRange(draft.value.length, draft.value.length);
   });
-});
+}
+
+window.nooknote.onPanelOpened(focusDraft);
+window.addEventListener('focus', focusDraft);
 
 window.nooknote.getState().then((loaded) => {
   appState = { ...loaded, notes: Array.isArray(loaded.notes) ? loaded.notes : [] };

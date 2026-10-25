@@ -31,24 +31,24 @@
 
 直接在浏览器中打开 `index.html`。原型数据保存在当前浏览器的 `localStorage` 中。
 
-### Windows 桌面端
+### Windows 桌面端（Tauri）
 
-安装 Node.js 后，在项目目录运行：
+桌面端复用 `desktop/` 下的 HTML、CSS 与界面交互；Tauri/Rust 管理悬停窗口、拖动吸附、系统托盘和本地文件。运行环境需要 Node.js、Rust 1.90+ 与 Windows C++ Build Tools。在项目目录运行：
 
 ```powershell
 npm install
 npm start
 ```
 
-桌面版使用系统托盘常驻，默认从主屏幕右侧中部唤出；从托盘菜单可设置随系统启动或完全退出。草稿、收件箱和触发位置写入 Electron 的本机用户数据目录。生成 Windows 安装包：
+桌面版使用系统托盘常驻，默认从主屏幕右侧中部唤出；从托盘菜单可设置随系统启动或完全退出。草稿、收件箱和触发位置写入本机用户数据目录。首次迁移时会读取旧 Electron 版的 `%APPDATA%\nooknote\nooknote.json`，并将数据复制到 Tauri 的用户目录。生成 Windows 安装包：
 
 ```powershell
-npm run dist
+npm run build
 ```
 
-安装包位于 `dist/`。当前桌面端使用 Electron 双窗口实现边缘触发条与速记面板；运行及安装包只面向 Windows x64。
+安装包位于 `src-tauri/target/release/bundle/nsis/`。安装包使用系统 WebView2，Windows 11 通常已预装；其他受支持的 Windows 版本会由安装程序在线下载运行时，因此安装包本身保持精简。桌面构建只面向 Windows x64。
 
 ## 版本
 
 - `v1.0.0`：确认首版产品规则并记录对应的交互原型。
-- 桌面版：Electron Windows x64 实现，提供 NSIS 安装包。
+- 桌面版：Tauri Windows x64 实现，沿用原桌面交互界面，提供 NSIS 安装包。

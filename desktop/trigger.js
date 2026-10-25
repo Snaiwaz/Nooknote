@@ -5,6 +5,10 @@ let last = null;
 let queuedPoint = null;
 let moveFrame = 0;
 
+function desktopPoint(event) {
+  return { x: event.screenX, y: event.screenY, scaleFactor: window.devicePixelRatio || 1 };
+}
+
 function setEdge(edge) {
   handle.classList.remove('edge-left', 'edge-right', 'edge-top', 'edge-bottom');
   handle.classList.add(`edge-${edge}`);
@@ -51,7 +55,7 @@ handle.addEventListener('pointermove', (event) => {
     handle.style.setProperty('--blob-scale-y', `${1 + speed * .2}`);
   }
   last = { x: event.screenX, y: event.screenY, time: now, angle: angle === null ? last.angle : angle };
-  queuedPoint = { x: event.screenX, y: event.screenY };
+  queuedPoint = desktopPoint(event);
   if (!moveFrame) {
     moveFrame = requestAnimationFrame(() => {
       moveFrame = 0;
@@ -65,7 +69,7 @@ handle.addEventListener('pointerup', async (event) => {
   dragging = false;
   if (moveFrame) cancelAnimationFrame(moveFrame);
   moveFrame = 0;
-  const finalPosition = await window.nooknote.finishDrag({ x: event.screenX, y: event.screenY });
+  const finalPosition = await window.nooknote.finishDrag(desktopPoint(event));
   handle.classList.remove('dragging');
   handle.style.removeProperty('--drag-rotation');
   handle.style.removeProperty('--blob-scale-x');

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "隅笺 Nooknote",
+  "version": "1.0.0",
+  "identifier": "com.nooknote.desktop",
+  "build": {
+    "frontendDist": "../desktop"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [],
+    "security": {
+      "capabilities": ["default"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "shortDescription": "贴在屏幕边缘的快速收件箱",
+    "longDescription": "随手记录灵感与备忘的 Windows 桌面应用。",
+    "windows": {
+      "nsis": {
+        "displayLanguageSelector": false,
+        "installMode": "currentUser",
+        "startMenuFolder": "隅笺 Nooknote",
+        "languages": ["SimpChinese"]
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
+    }
+  }
+}
