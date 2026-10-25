@@ -11,7 +11,28 @@ function escapeHtml(value) {
 }
 
 function formatTime(value) {
-  return new Date(value).toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' });
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '';
+
+  const now = new Date();
+  const time = date.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit', hourCycle:'h23' });
+  const isToday = date.getFullYear() === now.getFullYear()
+    && date.getMonth() === now.getMonth()
+    && date.getDate() === now.getDate();
+  if (isToday) return time;
+
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const isYesterday = date.getFullYear() === yesterday.getFullYear()
+    && date.getMonth() === yesterday.getMonth()
+    && date.getDate() === yesterday.getDate();
+  if (isYesterday) return `昨天 ${time}`;
+
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const dateLabel = date.getFullYear() === now.getFullYear()
+    ? `${month}-${day}`
+    : `${date.getFullYear()}-${month}-${day}`;
+  return `${dateLabel} ${time}`;
 }
 
 function showToast(message) {
