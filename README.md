@@ -10,11 +10,11 @@
 
 ### 界面截图
 
-![隅笺快速收件箱界面](docs/images/presentImage.png)
+<img src="docs/images/presentImage.png" alt="隅笺快速收件箱界面" width="360">
 
 ### 操作演示
 
-![隅笺操作演示 GIF](docs/videos/presentVideo.gif)
+<img src="docs/videos/presentVideo.gif" alt="隅笺操作演示 GIF" width="480">
 
 [打开原始演示视频（MP4）](docs/videos/presentVideo.mp4)
 
