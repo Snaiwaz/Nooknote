@@ -6,6 +6,14 @@
 
 隅笺希望让临时记录足够轻：入口平时收在屏幕边缘，不用切换到另一款应用；记下内容后，窗口会在鼠标离开时收起，草稿和已收录的记录仍会保留在本机。
 
+## 演示
+
+点击下方截图可打开完整演示视频。
+
+[![隅笺快速收件箱演示截图](docs/images/presentImage.png)](https://raw.githubusercontent.com/Snaiwaz/Nooknote/main/docs/videos/presentVideo.mp4)
+
+[播放完整演示视频（MP4）](https://raw.githubusercontent.com/Snaiwaz/Nooknote/main/docs/videos/presentVideo.mp4)
+
 ## 为什么做隅笺
 
 专注处理一项任务时，常会突然想到一个与当前工作关系不大的点子。为了不忘记不遗漏这一个好点子，人很容易停下手头的事，打开笔记软件、搜索工具或待办应用；原本只想记下一句话，却可能一路查下去，打断当前的专注。
