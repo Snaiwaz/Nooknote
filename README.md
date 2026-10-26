@@ -8,11 +8,15 @@
 
 ## 演示
 
-点击下方截图可打开完整演示视频。
+### 界面截图
 
-[![隅笺快速收件箱演示截图](docs/images/presentImage.png)](https://raw.githubusercontent.com/Snaiwaz/Nooknote/main/docs/videos/presentVideo.mp4)
+![隅笺快速收件箱界面](docs/images/presentImage.png)
 
-[播放完整演示视频（MP4）](https://raw.githubusercontent.com/Snaiwaz/Nooknote/main/docs/videos/presentVideo.mp4)
+### 操作演示
+
+![隅笺操作演示 GIF](docs/videos/presentVideo.gif)
+
+[打开原始演示视频（MP4）](docs/videos/presentVideo.mp4)
 
 ## 为什么做隅笺
 
